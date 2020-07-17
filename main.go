@@ -3,28 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
-	"path/filepath"
-	"sync"
-	"text/template"
+
+	"github.com/gerfg/chat-app/handler"
+	"github.com/gerfg/chat-app/model"
 )
 
 func main() {
-	http.Handle("/", &templateHandler{Filename: "chat.html"})
+	r := model.NewRoom()
+	http.Handle("/", &handler.Template{Filename: "chat.html"})
+	http.Handle("/room", r)
+
+	go r.Run()
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
-}
-
-type templateHandler struct {
-	Once     sync.Once
-	Filename string
-	Templ    *template.Template
-}
-
-func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	t.Once.Do(func() {
-		t.Templ = template.Must(template.ParseFiles(filepath.Join("templates", t.Filename)))
-	})
-	t.Templ.Execute(w, nil)
 }
