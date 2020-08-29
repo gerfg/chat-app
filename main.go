@@ -14,7 +14,8 @@ func main() {
 	flag.Parse()
 
 	r := model.NewRoom()
-	http.Handle("/", &handler.Template{Filename: "chat.html"})
+	http.Handle("/chat", handler.MustAuth(&handler.Template{Filename: "chat.html"}))
+	http.Handle("/login", &handler.Template{Filename: "login.html"})
 	http.Handle("/room", r)
 
 	go r.Run()
