@@ -16,6 +16,7 @@ func main() {
 	r := model.NewRoom()
 	http.Handle("/chat", handler.MustAuth(&handler.Template{Filename: "chat.html"}))
 	http.Handle("/login", &handler.Template{Filename: "login.html"})
+	http.HandleFunc("/auth/", handler.LoginHandler)
 	http.Handle("/room", r)
 
 	go r.Run()
